@@ -1,6 +1,6 @@
-# 🚀 Tang Poem AI - GPT-Style Transformer
+# 🚀 Tang Poem AI - GPT-Style Transformer (Large Dataset)
 
-A complete implementation of a GPT-style transformer model for generating Tang dynasty poems in Chinese. This project includes improved architecture with pre-layer normalization, multiple dataset sizes, and comprehensive training/generation scripts.
+A complete implementation of a GPT-style transformer model for generating Tang dynasty poems in Chinese, optimized for large-scale training on Google Colab with GPU acceleration.
 
 ## 🎯 Project Overview
 
@@ -10,28 +10,17 @@ This project implements a state-of-the-art language model for Chinese Tang poetr
 - **Multi-head self-attention** with causal masking
 - **Positional encoding** for sequence awareness
 - **Residual connections** throughout the network
-- **Gradual dataset scaling** (500 → 2,500 → 5,000 poems)
+- **Large dataset training** (5,000 poems, 336K tokens)
 - **GPU-optimized training** for Google Colab
 
-## 📊 Model Configurations
-
-### Small Model (Testing)
-- **Dataset**: 500 poems (35K tokens)
-- **Model Size**: 4.8M parameters
-- **Architecture**: 4 layers, 256 embeddings, 4 heads
-- **Training Time**: ~10-15 minutes on CPU
-
-### Medium Model (Recommended)
-- **Dataset**: 2,500 poems (179K tokens)
-- **Model Size**: 24M parameters
-- **Architecture**: 6 layers, 512 embeddings, 8 heads
-- **Training Time**: ~30-60 minutes on GPU
+## 📊 Model Configuration
 
 ### Large Model (Best Quality)
 - **Dataset**: 5,000 poems (336K tokens)
 - **Model Size**: 85M parameters
 - **Architecture**: 12 layers, 768 embeddings, 12 heads
-- **Training Time**: ~2-4 hours on GPU
+- **Training Time**: ~2-4 hours on Colab GPU
+- **Vocabulary**: 5,618 unique Chinese characters
 
 ## 🏗️ Architecture Improvements
 
@@ -58,35 +47,16 @@ out = self.attention(x_norm) + x  # Residual connection
 ```
 tang-poem-ai/
 ├── 📄 Model Architecture
-│   ├── gpt_model.py              # Basic GPT model
-│   └── gpt_model_improved.py     # Improved model with pre-layer norm
+│   └── gpt_model_improved.py     # Improved GPT model with pre-layer norm
 │
 ├── 🎯 Training Scripts
-│   ├── train_gpt_small.py        # Small model training
-│   ├── train_gpt_medium.py       # Medium model training
-│   └── train_gpt_large.py        # Large model training
-│
-├── 🎭 Generation Scripts
-│   ├── generate_gpt_small.py     # Small model generation
-│   ├── generate_gpt_medium.py    # Medium model generation
+│   ├── train_gpt_large.py        # Large model training
 │   └── generate_gpt_large.py     # Large model generation
 │
 ├── 📊 Dataset Preparation
 │   ├── extract_tang_poems.py     # Extract from 全唐诗 repository
-│   ├── create_small_dataset.py   # Create 500-poem subset
-│   ├── create_medium_dataset.py  # Create 2,500-poem subset
 │   ├── create_large_dataset.py   # Create 5,000-poem subset
-│   ├── prepare_small_dataset.py  # Prepare small dataset
-│   ├── prepare_medium_dataset.py # Prepare medium dataset
 │   └── prepare_large_dataset.py  # Prepare large dataset
-│
-├── 📚 Datasets
-│   ├── tang_small_train.bin      # Small dataset (35K tokens)
-│   ├── tang_small_meta.pkl       # Small metadata
-│   ├── tang_medium_train.bin     # Medium dataset (179K tokens)
-│   ├── tang_medium_meta.pkl      # Medium metadata
-│   ├── tang_large_train.bin      # Large dataset (336K tokens)
-│   └── tang_large_meta.pkl       # Large metadata
 │
 ├── 🚀 Colab Setup
 │   ├── COLAB_SETUP.md            # Comprehensive Colab guide
@@ -99,23 +69,13 @@ tang-poem-ai/
 
 ## 🚀 Quick Start
 
-### Local Training (CPU - Slow)
-```bash
-# Train small model
-python3 train_gpt_small.py
-
-# Generate poems
-python3 generate_gpt_small.py --start "春"
-python3 generate_gpt_small.py --interactive
-```
-
-### Google Colab Training (GPU - Fast)
+### Google Colab Training (Recommended)
 1. **Open** [Google Colab](https://colab.research.google.com/)
 2. **Enable GPU**: Runtime → Change runtime type → GPU
-3. **Upload dataset files**: `tang_medium_train.bin`, `tang_medium_meta.pkl`
+3. **Upload dataset files**: `tang_large_train.bin`, `tang_large_meta.pkl`
 4. **Download scripts** from GitHub
-5. **Train model**: `!python train_gpt_medium.py`
-6. **Generate poems**: `!python generate_gpt_medium.py --start "春"`
+5. **Train model**: `!python train_gpt_large.py`
+6. **Generate poems**: `!python generate_gpt_large.py --start "春"`
 
 See [COLAB_SETUP.md](COLAB_SETUP.md) for detailed instructions.
 
@@ -124,13 +84,13 @@ See [COLAB_SETUP.md](COLAB_SETUP.md) for detailed instructions.
 ### Command Line Generation
 ```bash
 # Generate a poem starting with "春"
-python3 generate_gpt_medium.py --start "春"
+python3 generate_gpt_large.py --start "春"
 
 # Generate with custom parameters
-python3 generate_gpt_medium.py --start "月" --max_tokens 150 --temperature 0.7
+python3 generate_gpt_large.py --start "月" --max_tokens 150 --temperature 0.7
 
 # Interactive mode
-python3 generate_gpt_medium.py --interactive
+python3 generate_gpt_large.py --interactive
 ```
 
 ### Sample Generated Poems
@@ -148,20 +108,11 @@ python3 generate_gpt_medium.py --interactive
 
 ### Expected Loss Curves
 ```
-Small Model (500 poems):
-Step 0: train loss 8.12
-Step 500: train loss 5.60
-Step 999: train loss 4.59
-
-Medium Model (2,500 poems):
-Step 0: train loss 8.62
-Step 1000: train loss 4.23
-Step 1999: train loss 3.45
-
 Large Model (5,000 poems):
 Step 0: train loss 8.85
-Step 2000: train loss 3.89
-Step 4999: train loss 2.98
+Step 1000: train loss 4.23
+Step 2000: train loss 3.45
+Step 5000: train loss 2.98
 ```
 
 ## 🔧 Technical Details
@@ -174,15 +125,15 @@ Step 4999: train loss 2.98
 
 ### Training Configuration
 - **Optimizer**: AdamW with weight decay 0.01
-- **Learning Rate**: 3e-4 (medium), 1e-4 (large)
-- **Batch Size**: 32 (medium), 64 (large)
-- **Block Size**: 256 (medium), 512 (large)
+- **Learning Rate**: 1e-4 (optimized for large model)
+- **Batch Size**: 64 (GPU optimized)
+- **Block Size**: 512 (larger context window)
 - **Dropout**: 0.1 throughout
 
 ### Generation Parameters
 - **Temperature**: 0.8 (controls randomness)
 - **Top-k**: 50 (nucleus sampling)
-- **Max Tokens**: 100-150 (poem length)
+- **Max Tokens**: 150 (poem length)
 
 ## 🎯 Performance Metrics
 
@@ -193,16 +144,16 @@ Step 4999: train loss 2.98
 - **Proper poem structure**: Rhyming and formatting
 
 ### Speed Benchmarks
-- **Small Model**: ~10-15 min on CPU
-- **Medium Model**: ~30-60 min on GPU
-- **Large Model**: ~2-4 hours on GPU
+- **Large Model**: ~2-4 hours on Colab GPU
+- **Generation**: Real-time poem creation
+- **Memory Usage**: ~8GB GPU memory
 
 ## 🚨 Troubleshooting
 
 ### Common Issues
 1. **Out of Memory**: Reduce batch size or use smaller model
-2. **Slow Training**: Enable GPU in Colab
-3. **Poor Quality**: Increase dataset size or training iterations
+2. **Slow Training**: Ensure GPU is enabled in Colab
+3. **Poor Quality**: Increase training iterations
 
 ### Performance Tips
 1. **Use GPU**: Always enable GPU for training
@@ -219,12 +170,6 @@ Step 4999: train loss 2.98
 4. **Web Interface**: Deploy as web application
 5. **Fine-tuning**: Optimize for specific styles
 
-### Research Directions
-1. **Attention Visualization**: Understand model focus
-2. **Style Transfer**: Generate different poetic styles
-3. **Multi-modal**: Combine with image generation
-4. **Interactive Editing**: Real-time poem refinement
-
 ## 📚 Dataset Information
 
 ### Source
@@ -235,7 +180,7 @@ Step 4999: train loss 2.98
 
 ### Processing
 - **Character-level tokenization**: Each character = one token
-- **Vocabulary size**: 3,218 (small) → 5,106 (medium) → 5,618 (large)
+- **Vocabulary size**: 5,618 unique characters
 - **Encoding**: UTF-8 with proper Chinese character handling
 
 ## 🤝 Contributing
@@ -261,4 +206,4 @@ This project is open source. Feel free to use, modify, and distribute.
 
 **Happy poem generating! 🚀**
 
-The improved GPT model with pre-layer normalization provides excellent results for Chinese Tang poetry generation, with training times optimized for both local development and cloud GPU acceleration. 
+The improved GPT model with pre-layer normalization provides excellent results for Chinese Tang poetry generation, optimized for large-scale training on Google Colab with GPU acceleration. 

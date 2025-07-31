@@ -1,11 +1,11 @@
-# 🚀 Tang Poem AI - Google Colab Setup Guide
+# 🚀 Tang Poem AI - Google Colab Setup Guide (Large Dataset)
 
-This guide will help you set up and train the Tang poem AI model on Google Colab with GPU acceleration.
+This guide will help you set up and train the Tang poem AI model on Google Colab with GPU acceleration, optimized for the large dataset (5,000 poems).
 
 ## 📋 Prerequisites
 
 1. **Google Colab Account** - Free GPU access
-2. **Dataset Files** - You'll need to upload the prepared dataset files
+2. **Dataset Files** - You'll need to upload the prepared large dataset files
 3. **Model Files** - All the training and generation scripts
 
 ## 🎯 Quick Start
@@ -17,10 +17,8 @@ This guide will help you set up and train the Tang poem AI model on Google Colab
 
 ### Step 2: Upload Dataset Files
 You need to upload these files to Colab:
-- `tang_medium_train.bin` (Medium dataset: 2,500 poems)
-- `tang_medium_meta.pkl` (Medium dataset metadata)
-- `tang_large_train.bin` (Large dataset: 5,000 poems) 
-- `tang_large_meta.pkl` (Large dataset metadata)
+- `tang_large_train.bin` (Large dataset: 5,000 poems, 2.7MB)
+- `tang_large_meta.pkl` (Large dataset metadata, 94KB)
 
 ### Step 3: Install Dependencies
 ```python
@@ -35,13 +33,11 @@ import requests
 
 files_to_download = [
     "gpt_model_improved.py",
-    "train_gpt_medium.py", 
     "train_gpt_large.py",
-    "generate_gpt_medium.py",
     "generate_gpt_large.py"
 ]
 
-base_url = "https://raw.githubusercontent.com/your-username/tang-poem-ai/main/"
+base_url = "https://raw.githubusercontent.com/JackDai-2791/tang-poem-ai/main/"
 
 for file in files_to_download:
     print(f"Downloading {file}...")
@@ -54,15 +50,7 @@ for file in files_to_download:
         print(f"❌ Failed to download {file}")
 ```
 
-### Step 5: Train the Model
-
-#### Option A: Train Medium Model (Recommended for first run)
-```python
-# Train on medium dataset (2,500 poems)
-!python train_gpt_medium.py
-```
-
-#### Option B: Train Large Model (For better results)
+### Step 5: Train the Large Model
 ```python
 # Train on large dataset (5,000 poems)
 !python train_gpt_large.py
@@ -71,27 +59,20 @@ for file in files_to_download:
 ### Step 6: Generate Poems
 ```python
 # Generate poems with the trained model
-!python generate_gpt_medium.py --start "春"
-# or
 !python generate_gpt_large.py --start "春"
 
 # Interactive mode
-!python generate_gpt_medium.py --interactive
+!python generate_gpt_large.py --interactive
 ```
 
-## 📊 Model Configurations
-
-### Medium Model (Recommended)
-- **Dataset**: 2,500 poems (179K tokens)
-- **Model Size**: 24M parameters
-- **Training Time**: ~30-60 minutes on Colab GPU
-- **Architecture**: 6 layers, 512 embeddings, 8 heads
+## 📊 Model Configuration
 
 ### Large Model (Best Quality)
-- **Dataset**: 5,000 poems (336K tokens)  
+- **Dataset**: 5,000 poems (336K tokens)
 - **Model Size**: 85M parameters
 - **Training Time**: ~2-4 hours on Colab GPU
 - **Architecture**: 12 layers, 768 embeddings, 12 heads
+- **Vocabulary**: 5,618 unique Chinese characters
 
 ## 🔧 Advanced Features
 
@@ -114,11 +95,11 @@ for file in files_to_download:
 
 ### Training Progress
 ```
-Step 0: train loss 8.62
-Step 100: train loss 6.45
-Step 200: train loss 5.89
-Step 500: train loss 4.23
-Step 1000: train loss 3.45
+Step 0: train loss 8.85
+Step 500: train loss 6.23
+Step 1000: train loss 4.23
+Step 2000: train loss 3.45
+Step 5000: train loss 2.98
 ```
 
 ### Sample Generated Poems
@@ -126,6 +107,10 @@ Step 1000: train loss 3.45
 春，花開滿院香。
 東風吹綠柳，細雨潤青草。
 燕子歸來時，蝴蝶舞翩翩。
+
+月，清輝灑人間。
+銀河倒影水，玉露滴花前。
+夜深人靜處，思緒萬千般。
 ```
 
 ## 🎮 Interactive Usage
@@ -133,13 +118,13 @@ Step 1000: train loss 3.45
 ### Command Line Generation
 ```bash
 # Generate a poem starting with "春"
-python generate_gpt_medium.py --start "春"
+python generate_gpt_large.py --start "春"
 
 # Generate with custom parameters
-python generate_gpt_medium.py --start "月" --max_tokens 150 --temperature 0.7
+python generate_gpt_large.py --start "月" --max_tokens 150 --temperature 0.7
 
 # Interactive mode
-python generate_gpt_medium.py --interactive
+python generate_gpt_large.py --interactive
 ```
 
 ### Interactive Commands
@@ -154,7 +139,6 @@ python generate_gpt_medium.py --interactive
 After training, download the model file:
 ```python
 from google.colab import files
-files.download('gpt_tang_medium_model.pt')
 files.download('gpt_tang_large_model.pt')
 ```
 
@@ -164,8 +148,8 @@ files.download('gpt_tang_large_model.pt')
 import torch
 from gpt_model_improved import GPTModel
 
-model = GPTModel(vocab_size=5106, n_embd=512, n_head=8, n_layer=6, block_size=256)
-model.load_state_dict(torch.load('gpt_tang_medium_model.pt'))
+model = GPTModel(vocab_size=5618, n_embd=768, n_head=12, n_layer=12, block_size=512)
+model.load_state_dict(torch.load('gpt_tang_large_model.pt'))
 ```
 
 ## 🚨 Troubleshooting
@@ -173,9 +157,9 @@ model.load_state_dict(torch.load('gpt_tang_medium_model.pt'))
 ### Common Issues
 
 1. **Out of Memory Error**
-   - Reduce batch size in the config
-   - Use medium model instead of large
+   - Reduce batch size in the config (change from 64 to 32)
    - Restart Colab runtime
+   - Use smaller model if needed
 
 2. **Slow Training**
    - Ensure GPU is enabled
@@ -198,14 +182,16 @@ model.load_state_dict(torch.load('gpt_tang_medium_model.pt'))
 ```
 tang-poem-ai/
 ├── gpt_model_improved.py      # Improved GPT model architecture
-├── train_gpt_medium.py        # Training script for medium dataset
 ├── train_gpt_large.py         # Training script for large dataset
-├── generate_gpt_medium.py     # Generation script for medium model
 ├── generate_gpt_large.py      # Generation script for large model
-├── tang_medium_train.bin      # Medium dataset (upload to Colab)
-├── tang_medium_meta.pkl       # Medium metadata (upload to Colab)
+├── create_large_dataset.py    # Dataset creation script
+├── prepare_large_dataset.py   # Dataset preparation script
+├── extract_tang_poems.py      # Extract from 全唐诗 repository
 ├── tang_large_train.bin       # Large dataset (upload to Colab)
-└── tang_large_meta.pkl        # Large metadata (upload to Colab)
+├── tang_large_meta.pkl        # Large metadata (upload to Colab)
+├── COLAB_SETUP.md             # This guide
+├── colab_setup.py             # Colab environment setup
+└── tang_poem_ai_colab.ipynb   # Colab notebook template
 ```
 
 ## 🎉 Success Metrics
@@ -227,4 +213,4 @@ tang-poem-ai/
 
 **Happy Training! 🚀**
 
-The improved GPT model with pre-layer normalization should train much faster and produce better quality Tang poems compared to the basic version. 
+The improved GPT model with pre-layer normalization should train efficiently on Colab GPU and produce high-quality Tang poems with the large dataset. 
